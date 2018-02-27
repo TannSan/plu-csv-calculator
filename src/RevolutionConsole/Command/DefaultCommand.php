@@ -7,10 +7,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use RevolutionConsole\FileHelper\CSVHelper;
 
 class DefaultCommand extends Command
 {
-    private $is_first_time;
+    private $is_first_time = true;
 
     protected function configure()
     {
@@ -34,5 +35,21 @@ class DefaultCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $input_csv = $input->getArgument('csv-input');
+        $output_csv = $input->getArgument('csv-output');
+
+        // Step 1: Attempt to read the input file
+        if(file_exists($input_csv))
+            {
+                $plu_totals = CSVHelper::processTotals($input_csv);
+                if($plu_totals === false)
+                    $io->error('Could note open file: '.$input_csv);
+                else
+                    {
+                        echo var_dump($plu_totals);
+                    }
+            }
+        else
+            $io->error('File does not exist: '.$input_csv);
     }
 }
